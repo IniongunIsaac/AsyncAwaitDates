@@ -8,14 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject private var currentDateListViewModel = CurrentDateListViewModel()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationView {
+            List(currentDateListViewModel.currentDates) { currentDate in
+                Text(currentDate.date)
+            }.listStyle(.plain)
+            
+            .navigationTitle("Dates")
+            .navigationBarItems(trailing: Button(action: {
+                Task {
+                    await currentDateListViewModel.getDates()
+                }
+            }, label: {
+                Image(systemName: "arrow.clockwise.circle")
+            }))
+            .task {
+                await currentDateListViewModel.getDates()
+            }
         }
-        .padding()
     }
 }
 
